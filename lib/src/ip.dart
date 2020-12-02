@@ -34,7 +34,8 @@ class IPService extends Service {
     _client = http.Client();
     _request2UpdateIP();
     final _config = IPServiceConfig.fromJson(config);
-    _timer = Timer(_config?.ipUpdateDuration ?? const Duration(minutes: 5), () {
+    _timer = Timer.periodic(
+        _config?.ipUpdateDuration ?? const Duration(minutes: 5), (_) {
       _request2UpdateIP();
     });
   }
@@ -52,7 +53,7 @@ class IPService extends Service {
 
   bool _isUpdating = false;
   Future<void> _request2UpdateIP() async {
-      logger.v('request get ip.');
+    logger.v('request get ip.');
     if (_isUpdating) {
       logger.v('skip get ip.');
       return;
