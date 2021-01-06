@@ -51,15 +51,9 @@ class IPService extends Service {
   @override
   String get configName => 'ip';
 
-  bool _isUpdating = false;
   Future<void> _request2UpdateIP() async {
     logger.v('request get ip.');
-    if (_isUpdating) {
-      logger.v('skip get ip.');
-      return;
-    }
     logger.v('start get ip.');
-    _isUpdating = true;
     try {
       final response = await _client.get('https://ipv4.icanhazip.com/');
       final ip = response.body.trim();
@@ -71,8 +65,6 @@ class IPService extends Service {
       _updateIP(ip);
     } catch (e, stack) {
       logger.e('get ip failed.', e, stack);
-    } finally {
-      _isUpdating = false;
     }
   }
 
