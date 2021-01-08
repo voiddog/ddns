@@ -21,7 +21,7 @@ bool isIPV4(String ip) {
     assert(ips.length == 4);
     for (var node in ips) {
       final v = int.parse(node);
-      if (v <= 0 || v > 255) {
+      if (v < 0 || v > 255) {
         return false;
       }
     }
