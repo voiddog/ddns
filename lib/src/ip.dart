@@ -71,9 +71,9 @@ class IPService extends Service {
   void _updateIP(String ip) {
     if (ip != _ipv4) {
       logger.i('ip changed: $ip');
-      _ipv4 = ip;
-      _ipv4StreamCtl.add(ip);
     }
+    _ipv4 = ip;
+    _ipv4StreamCtl.add(ip);
   }
 
   final StreamController<String> _ipv4StreamCtl =

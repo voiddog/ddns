@@ -63,11 +63,15 @@ class GodaddyService extends Service {
   @override
   String get configName => 'godaddy';
 
+  String _lastIpv4;
   Future<void> _onNewIp(String ipv4) async {
     if (_config == null) {
       return;
     }
     if (!isIPV4(ipv4)) {
+      return;
+    }
+    if (_lastIpv4 == ipv4) {
       return;
     }
     final domain = _config.domain;
@@ -97,6 +101,7 @@ class GodaddyService extends Service {
       logger.e('code: ${response.statusCode}, body: ${response.body}');
     } else {
       logger.i('success update godaddy ip: ${records}.${domain} -> $ipv4');
+      _lastIpv4 = ipv4;
     }
   }
 
