@@ -21,7 +21,7 @@ void main(List<String> arguments) {
     Logger.level = Level.info;
   }
 
-  if (configPath is! String || configPath?.isNotEmpty != true) {
+  if (configPath is! String || configPath.isNotEmpty != true) {
     ddns.logger.e('缺少配置文件 path 参数.');
     exit(0);
   }

@@ -10,3 +10,5 @@ doc/api/
 
 # config file
 config.json
+
+bin/ddns

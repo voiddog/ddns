@@ -35,7 +35,7 @@ class IPService extends Service {
     _request2UpdateIP();
     final _config = IPServiceConfig.fromJson(config);
     _timer = Timer.periodic(
-        _config?.ipUpdateDuration as Duration? ?? const Duration(minutes: 5), (_) {
+        _config.ipUpdateDuration as Duration? ?? const Duration(minutes: 5), (_) {
       _request2UpdateIP();
     });
   }
