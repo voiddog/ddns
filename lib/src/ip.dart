@@ -60,6 +60,7 @@ class IPService extends Service {
       // verify ipv4
       if (!isIPV4(ip)) {
         logger.e('$ip is not ipv4.');
+        return;
       }
       logger.v('get ip success: $ip');
       _updateIP(ip);
