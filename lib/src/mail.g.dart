@@ -11,8 +11,8 @@ MailServiceConfig _$MailServiceConfigFromJson(Map<String, dynamic> json) {
     username: json['username'] as String,
     password: json['password'] as String,
     smtpHost: json['smtp_host'] as String,
-    smtpPort: json['smtp_port'] as int,
-    ssl: json['ssl'] as bool,
+    smtpPort: json['smtp_port'] as int?,
+    ssl: json['ssl'] as bool?,
   );
 }
 

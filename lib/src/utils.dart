@@ -12,12 +12,12 @@ final logger = Logger(
 
 final eventBus = EventBus();
 
-bool isIPV4(String ip) {
+bool isIPV4(String? ip) {
   if (ip?.isNotEmpty != true) {
     return false;
   }
   try {
-    final ips = ip.split('.');
+    final ips = ip!.split('.');
     assert(ips.length == 4);
     for (var node in ips) {
       final v = int.parse(node);

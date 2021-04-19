@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:ddns/src/utils.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:meta/meta.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 import 'service.dart';
+import 'utils.dart';
 
 part 'mail.g.dart';
 
@@ -20,14 +20,14 @@ class MailServiceConfig {
   final String smtpHost;
 
   @JsonKey(name: 'smtp_port')
-  final int smtpPort;
+  final int? smtpPort;
 
-  final bool ssl;
+  final bool? ssl;
 
   MailServiceConfig({
-    @required this.username,
-    @required this.password,
-    @required this.smtpHost,
+    required this.username,
+    required this.password,
+    required this.smtpHost,
     this.smtpPort = 587,
     this.ssl = false,
   })  : assert(username != null),
@@ -42,9 +42,9 @@ class MailServiceConfig {
 class SendMailEvent {
   final List<String> recipients;
   final String subject;
-  final String text;
+  final String? text;
 
-  SendMailEvent({@required this.recipients, @required this.subject, this.text})
+  SendMailEvent({required this.recipients, required this.subject, this.text})
       : assert(recipients != null),
         assert(subject != null);
 }
@@ -59,8 +59,8 @@ class MailService extends Service {
     final config = MailServiceConfig.fromJson(json);
     final smtpServer = SmtpServer(
       config.smtpHost,
-      port: config.smtpPort,
-      ssl: config.ssl,
+      port: config.smtpPort!,
+      ssl: config.ssl!,
       username: config.username,
       password: config.password,
     );
@@ -76,7 +76,7 @@ class MailService extends Service {
 
   @override
   void onStop() {
-    _subscription.cancel();
+    _subscription!.cancel();
     _subscription = null;
   }
 
@@ -96,5 +96,5 @@ class MailService extends Service {
     }
   }
 
-  StreamSubscription _subscription;
+  StreamSubscription? _subscription;
 }

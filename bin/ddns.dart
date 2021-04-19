@@ -30,7 +30,7 @@ void main(List<String> arguments) {
     ddns.logger.e('配置文件 $configPath 不存在.');
     exit(0);
   }
-  Map<String, dynamic> config = jsonDecode(File(configPath).readAsStringSync());
+  Map<String, dynamic>? config = jsonDecode(File(configPath).readAsStringSync());
   final ipService = ddns.IPService();
   final serviceList = <ddns.Service>[
     ipService,
@@ -41,7 +41,7 @@ void main(List<String> arguments) {
     ddns.MailService(),
   ];
   serviceList.forEach((service) {
-    final c = config[service.configName];
+    final c = config![service.configName];
     if (c != null) {
       service.start(c);
     }

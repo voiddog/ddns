@@ -1,5 +1,4 @@
 abstract class Service {
-
   bool get isStart => _isStart;
   bool _isStart = false;
 

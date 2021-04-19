@@ -1,20 +1,20 @@
 import 'dart:async';
 
-import 'package:ddns/ddns.dart';
-import 'package:ddns/src/utils.dart';
-import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
+import 'package:meta/meta.dart';
 
+import '../ddns.dart';
 import 'service.dart';
+import 'utils.dart';
 
 part 'ip.g.dart';
 
 @JsonSerializable()
 class IPServiceConfig {
-  final int ipUpdateDuration;
+  final int? ipUpdateDuration;
 
-  IPServiceConfig({@required this.ipUpdateDuration});
+  IPServiceConfig({required this.ipUpdateDuration});
 
   factory IPServiceConfig.fromJson(Map<String, dynamic> json) =>
       _$IPServiceConfigFromJson(json);
@@ -24,7 +24,7 @@ class IPService extends Service {
   IPService();
 
   /// 当前的 ipv4
-  String get ipv4 => _ipv4;
+  String? get ipv4 => _ipv4;
   Stream<String> get ipStream => _ipv4StreamCtl.stream;
 
   @override
@@ -35,16 +35,16 @@ class IPService extends Service {
     _request2UpdateIP();
     final _config = IPServiceConfig.fromJson(config);
     _timer = Timer.periodic(
-        _config?.ipUpdateDuration ?? const Duration(minutes: 5), (_) {
+        _config?.ipUpdateDuration as Duration? ?? const Duration(minutes: 5), (_) {
       _request2UpdateIP();
     });
   }
 
   @override
   void onStop() {
-    _client.close();
+    _client!.close();
     _client = null;
-    _timer.cancel();
+    _timer!.cancel();
     _timer = null;
   }
 
@@ -55,7 +55,8 @@ class IPService extends Service {
     logger.v('request get ip.');
     logger.v('start get ip.');
     try {
-      final response = await _client.get('https://ipv4.icanhazip.com/');
+      final response =
+          await _client!.get(Uri.parse('https://ipv4.icanhazip.com/'));
       final ip = response.body.trim();
       // verify ipv4
       if (!isIPV4(ip)) {
@@ -79,7 +80,7 @@ class IPService extends Service {
 
   final StreamController<String> _ipv4StreamCtl =
       StreamController.broadcast(sync: true);
-  String _ipv4;
-  http.Client _client;
-  Timer _timer;
+  String? _ipv4;
+  http.Client? _client;
+  Timer? _timer;
 }

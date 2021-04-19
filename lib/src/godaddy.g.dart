@@ -13,7 +13,7 @@ GodaddyConfig _$GodaddyConfigFromJson(Map<String, dynamic> json) {
     key: json['key'] as String,
     secret: json['secret'] as String,
     errorMails:
-        (json['error_mails'] as List)?.map((e) => e as String)?.toList(),
+        (json['error_mails'] as List?)?.map((e) => e as String)?.toList(),
   );
 }
 

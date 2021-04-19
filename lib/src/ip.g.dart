@@ -8,7 +8,7 @@ part of 'ip.dart';
 
 IPServiceConfig _$IPServiceConfigFromJson(Map<String, dynamic> json) {
   return IPServiceConfig(
-    ipUpdateDuration: json['ipUpdateDuration'] as int,
+    ipUpdateDuration: json['ipUpdateDuration'] as int?,
   );
 }
 
