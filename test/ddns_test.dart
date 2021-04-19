@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:ddns/ddns.dart';
 import 'package:test/test.dart';
 

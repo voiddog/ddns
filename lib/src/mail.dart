@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
-import 'package:meta/meta.dart';
 
 import 'service.dart';
 import 'utils.dart';
@@ -30,9 +29,7 @@ class MailServiceConfig {
     required this.smtpHost,
     this.smtpPort = 587,
     this.ssl = false,
-  })  : assert(username != null),
-        assert(password != null),
-        assert(smtpHost != null);
+  });
 
   factory MailServiceConfig.fromJson(Map<String, dynamic> json) =>
       _$MailServiceConfigFromJson(json);
@@ -44,9 +41,7 @@ class SendMailEvent {
   final String subject;
   final String? text;
 
-  SendMailEvent({required this.recipients, required this.subject, this.text})
-      : assert(recipients != null),
-        assert(subject != null);
+  SendMailEvent({required this.recipients, required this.subject, this.text});
 }
 
 class MailService extends Service {

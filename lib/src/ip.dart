@@ -1,8 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
-import 'package:meta/meta.dart';
 
 import '../ddns.dart';
 import 'service.dart';
@@ -56,8 +56,9 @@ class IPService extends Service {
     logger.v('start get ip.');
     try {
       final response =
-          await _client!.get(Uri.parse('https://ipv4.icanhazip.com/'));
-      final ip = response.body.trim();
+          await _client!.get(Uri.parse('https://ipapi.co/json/'));
+      final jsonObject = jsonDecode(response.body);
+      final ip = jsonObject['ip'];
       // verify ipv4
       if (!isIPV4(ip)) {
         logger.e('$ip is not ipv4.');

@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
-import 'package:meta/meta.dart';
 
 import '../ddns.dart';
 import 'mail.dart';
@@ -27,10 +26,7 @@ class GodaddyConfig {
     required this.key,
     required this.secret,
     this.errorMails,
-  })  : assert(domain != null),
-        assert(records != null),
-        assert(key != null),
-        assert(secret != null);
+  });
 
   factory GodaddyConfig.fromJson(Map<String, dynamic> json) =>
       _$GodaddyConfigFromJson(json);
@@ -41,13 +37,12 @@ class GodaddyService extends Service {
 
   final String? initIpv4;
 
-  GodaddyService({required this.ipv4Stream, required this.initIpv4})
-      : assert(ipv4Stream != null);
+  GodaddyService({required this.ipv4Stream, required this.initIpv4});
 
   @override
   void onStart(Map<String, dynamic> config) {
     assert(_subscription == null);
-    _config = config == null ? null : GodaddyConfig.fromJson(config);
+    _config = GodaddyConfig.fromJson(config);
     _subscription = ipv4Stream.listen(_onNewIp);
     if (initIpv4?.isNotEmpty == true) {
       _onNewIp(initIpv4);
