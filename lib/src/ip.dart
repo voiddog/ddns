@@ -56,7 +56,7 @@ class IPService extends Service {
     logger.v('start get ip.');
     try {
       final response =
-          await _client!.get(Uri.parse('https://ipapi.co/json/'));
+          await _client!.get(Uri.parse('https://api.ipify.org?format=json'));
       final jsonObject = jsonDecode(response.body);
       final ip = jsonObject['ip'];
       // verify ipv4
