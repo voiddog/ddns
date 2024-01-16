@@ -71,35 +71,39 @@ class GodaddyService extends Service {
     }
     final domain = _config!.domain;
     final records = _config!.records;
-    final response = await http.put(
-      Uri.parse(
-          'https://api.godaddy.com/v1/domains/$domain/records/A/$records'),
-      body: jsonEncode([
-        {
-          'data': ipv4,
-          'ttl': 3600,
-          'name': records,
-          'type': 'A',
+    try {
+      final response = await http.put(
+        Uri.parse(
+            'https://api.godaddy.com/v1/domains/$domain/records/A/$records'),
+        body: jsonEncode([
+          {
+            'data': ipv4,
+            'ttl': 3600,
+            'name': records,
+            'type': 'A',
+          }
+        ]),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'sso-key ${_config!.key}:${_config!.secret}',
+        },
+      );
+      if (response.statusCode != 200) {
+        if (_config!.errorMails?.isNotEmpty == true) {
+          eventBus.fire(SendMailEvent(
+            recipients: _config!.errorMails!,
+            subject: 'Update Godaddy error',
+            text: 'code :${response.statusCode}\n${response.body}',
+          ));
         }
-      ]),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'sso-key ${_config!.key}:${_config!.secret}',
-      },
-    );
-    if (response.statusCode != 200) {
-      if (_config!.errorMails?.isNotEmpty == true) {
-        eventBus.fire(SendMailEvent(
-          recipients: _config!.errorMails!,
-          subject: 'Update Godaddy error',
-          text: 'code :${response.statusCode}\n${response.body}',
-        ));
+        logger.e('code: ${response.statusCode}, body: ${response.body}');
+      } else {
+        logger.i('success update godaddy ip: ${records}.${domain} -> $ipv4');
+        _lastIpv4 = ipv4;
       }
-      logger.e('code: ${response.statusCode}, body: ${response.body}');
-    } else {
-      logger.i('success update godaddy ip: ${records}.${domain} -> $ipv4');
-      _lastIpv4 = ipv4;
+    } catch (e) {
+      logger.e('request error: $e');
     }
   }
 
