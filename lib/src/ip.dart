@@ -67,7 +67,7 @@ class IPService extends Service {
       logger.v('get ip success: $ip');
       _updateIP(ip);
     } catch (e, stack) {
-      logger.e('get ip failed.', e, stack);
+      logger.e('get ip failed.', error: e, stackTrace: stack);
     }
   }
 

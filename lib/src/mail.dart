@@ -85,9 +85,9 @@ class MailService extends Service {
       for (var p in e.problems) {
         sb.writeln('  code: ${p.code}, ');
       }
-      logger.e(sb.toString(), e, stack);
+      logger.e(sb.toString(), error: e, stackTrace: stack);
     } catch (e, stack) {
-      logger.e('On mail send error:', e, stack);
+      logger.e('On mail send error:', error: e, stackTrace: stack);
     }
   }
 
