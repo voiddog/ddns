@@ -6,15 +6,14 @@ part of 'mail.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-MailServiceConfig _$MailServiceConfigFromJson(Map<String, dynamic> json) {
-  return MailServiceConfig(
-    username: json['username'] as String,
-    password: json['password'] as String,
-    smtpHost: json['smtp_host'] as String,
-    smtpPort: json['smtp_port'] as int?,
-    ssl: json['ssl'] as bool?,
-  );
-}
+MailServiceConfig _$MailServiceConfigFromJson(Map<String, dynamic> json) =>
+    MailServiceConfig(
+      username: json['username'] as String,
+      password: json['password'] as String,
+      smtpHost: json['smtp_host'] as String,
+      smtpPort: json['smtp_port'] as int? ?? 587,
+      ssl: json['ssl'] as bool? ?? false,
+    );
 
 Map<String, dynamic> _$MailServiceConfigToJson(MailServiceConfig instance) =>
     <String, dynamic>{

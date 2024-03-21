@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
 
 import '../ddns.dart';
@@ -17,6 +17,7 @@ class GodaddyConfig {
   final String records;
   final String key;
   final String secret;
+  final String? proxy;
   @JsonKey(name: 'error_mails')
   final List<String>? errorMails;
 
@@ -25,6 +26,7 @@ class GodaddyConfig {
     required this.records,
     required this.key,
     required this.secret,
+    this.proxy,
     this.errorMails,
   });
 
@@ -71,33 +73,45 @@ class GodaddyService extends Service {
     }
     final domain = _config!.domain;
     final records = _config!.records;
+    final client = HttpClient();
+
+    final url = Uri.parse(
+        'https://api.godaddy.com/v1/domains/$domain/records/A/$records');
+    final body = jsonEncode([
+      {
+        'data': ipv4,
+        'ttl': 3600,
+        'name': records,
+        'type': 'A',
+      }
+    ]);
+
     try {
-      final response = await http.put(
-        Uri.parse(
-            'https://api.godaddy.com/v1/domains/$domain/records/A/$records'),
-        body: jsonEncode([
-          {
-            'data': ipv4,
-            'ttl': 3600,
-            'name': records,
-            'type': 'A',
-          }
-        ]),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'sso-key ${_config!.key}:${_config!.secret}',
-        },
-      );
+      if (_config!.proxy != null) {
+        client.findProxy = (uri) {
+          return 'PROXY ${_config!.proxy}';
+        };
+      }
+      final request = await client.putUrl(url);
+      request.headers.contentType = ContentType.json;
+      request.headers.add(HttpHeaders.authorizationHeader,
+          'sso-key ${_config!.key}:${_config!.secret}');
+      request.headers.add(HttpHeaders.acceptHeader, 'application/json');
+
+      request.write(body);
+
+      final response = await request.close();
+
       if (response.statusCode != 200) {
+        final responseBody = await response.transform(utf8.decoder).join();
         if (_config!.errorMails?.isNotEmpty == true) {
           eventBus.fire(SendMailEvent(
             recipients: _config!.errorMails!,
             subject: 'Update Godaddy error',
-            text: 'code :${response.statusCode}\n${response.body}',
+            text: 'code :${response.statusCode}\n${responseBody}',
           ));
         }
-        logger.e('code: ${response.statusCode}, body: ${response.body}');
+        logger.e('code: ${response.statusCode}, body: ${responseBody}');
       } else {
         logger.i('success update godaddy ip: ${records}.${domain} -> $ipv4');
         _lastIpv4 = ipv4;
@@ -105,6 +119,7 @@ class GodaddyService extends Service {
     } catch (e) {
       logger.e('request error: $e');
     }
+    client.findProxy = null;
   }
 
   GodaddyConfig? _config;

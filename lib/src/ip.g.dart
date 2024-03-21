@@ -6,11 +6,10 @@ part of 'ip.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-IPServiceConfig _$IPServiceConfigFromJson(Map<String, dynamic> json) {
-  return IPServiceConfig(
-    ipUpdateDuration: json['ipUpdateDuration'] as int?,
-  );
-}
+IPServiceConfig _$IPServiceConfigFromJson(Map<String, dynamic> json) =>
+    IPServiceConfig(
+      ipUpdateDuration: json['ipUpdateDuration'] as int?,
+    );
 
 Map<String, dynamic> _$IPServiceConfigToJson(IPServiceConfig instance) =>
     <String, dynamic>{
