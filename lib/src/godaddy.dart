@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:core';
 
 import 'package:json_annotation/json_annotation.dart';
 
@@ -46,6 +47,7 @@ class GodaddyService extends Service {
     assert(_subscription == null);
     _config = GodaddyConfig.fromJson(config);
     _subscription = ipv4Stream.listen(_onNewIp);
+    _send_list = <int>[];
     if (initIpv4?.isNotEmpty == true) {
       _onNewIp(initIpv4);
     }
@@ -105,15 +107,21 @@ class GodaddyService extends Service {
       if (response.statusCode != 200) {
         final responseBody = await response.transform(utf8.decoder).join();
         if (_config!.errorMails?.isNotEmpty == true) {
-          eventBus.fire(SendMailEvent(
-            recipients: _config!.errorMails!,
-            subject: 'Update Godaddy error',
-            text: 'code :${response.statusCode}\n${responseBody}',
-          ));
+          final sendText = 'code :${response.statusCode}\n${responseBody}';
+          final sendHashCode = sendText.hashCode;
+          if (_send_list?.contains(sendHashCode) == true) {
+            _send_list?.add(sendHashCode);
+            eventBus.fire(SendMailEvent(
+              recipients: _config!.errorMails!,
+              subject: 'Update Godaddy error',
+              text: sendText,
+            ));
+          }
         }
         logger.e('code: ${response.statusCode}, body: ${responseBody}');
       } else {
         logger.i('success update godaddy ip: ${records}.${domain} -> $ipv4');
+        _send_list?.clear();
         _lastIpv4 = ipv4;
       }
     } catch (e) {
@@ -124,4 +132,5 @@ class GodaddyService extends Service {
 
   GodaddyConfig? _config;
   StreamSubscription? _subscription;
+  List<int>? _send_list;
 }
